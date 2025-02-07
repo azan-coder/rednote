@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书标题生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .input-section {
+            margin: 20px 0;
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 小红书标题生成器 🌟</h1>
+    <div class="input-section">
+        <input type="text" id="keywords" placeholder="请输入关键词（如：减肥、穿搭、美食）">
+        <button onclick="generateTitles()">生成标题</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        function generateTitles() {
+            const keywords = document.getElementById('keywords').value.trim();
+            if (!keywords) {
+                alert('请输入关键词');
+                return;
+            }
+
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ keywords })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const results = document.getElementById('results');
+                if (data.titles) {
+                    results.innerHTML = data.titles.map(title => 
+                        `<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">${title}</div>`
+                    ).join('');
+                } else {
+                    results.innerHTML = `<div style="color: red;">${data.error || '生成失败'}</div>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('results').innerHTML = 
+                    `<div style="color: red;">发生错误：${error}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
